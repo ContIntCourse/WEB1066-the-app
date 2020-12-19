@@ -3,8 +3,7 @@ jdk: openjdk10
 
 os: linux
 
-services:
-  - docker
+services: docker
 
 env:
   - COVERAGE=.10
@@ -23,6 +22,10 @@ jobs:
       script: ./gradlew -p ./monolithic/repository/cart check
       script: ./gradlew -p ./monolithic/repository/product check
       script: ./gradlew -p ./monolithic/repository/user check
+    - stage: before_deploy
+      script: ./gradlew -p ./monolithic/repository/ui packageToContainer
+      script: docker tag natgainer/monolithic-shop:latest natgainer/ContIntCourse:latest
     - stage: deploy
       script: bash -c "echo \"${DOCKER_PASSWORD}\" | docker login --username \"${DOCKER_LOGIN}\" --password-stdin"
+      script: docker push $DOCKER_LOGIN/monolithic-ship:latest
       script: echo 'WIP'
