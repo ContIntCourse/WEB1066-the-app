@@ -1,11 +1,16 @@
 language: java
 jdk: openjdk10
-     openjdk9
+
 os: linux
+
+services:
+  - docker
 
 env:
   - COVERAGE=.10
+
 script:
+  - travis encrypt DOCKER_PASSWORD="secretvalue" --ad env.global --com
   - ./gradlew clean jar
 
 jobs:
@@ -19,4 +24,5 @@ jobs:
       script: ./gradlew -p ./monolithic/repository/product check
       script: ./gradlew -p ./monolithic/repository/user check
     - stage: deploy
+      script: bash -c "echo \"${DOCKER_PASSWORD}\" | docker login --username \"${DOCKER_LOGIN}\" --password-stdin"
       script: echo 'WIP'
